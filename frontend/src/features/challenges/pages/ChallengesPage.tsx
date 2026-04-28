@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { ChallengeList } from '../components/ChallengeList'
-import { useColorCycle, CYCLE_DURATION_MS } from '../../../hooks/useColorCycle'
-
+import { useColorCycle } from '../../../hooks/useColorCycle'
 
 const TARGET = new Date('2026-05-25T23:59:59')
 
@@ -53,24 +52,14 @@ const gifs = [
   '/gif4.gif',
 ]
 
-const GIF_DURATION_MS = CYCLE_DURATION_MS
-
 export function ChallengesPage() {
   const [time, setTime] = useState(getTimeLeft)
-  const [currentGif, setCurrentGif] = useState(0)
-  useColorCycle()
+  const { index } = useColorCycle()
 
   useEffect(() => {
     const id = setInterval(() => setTime(getTimeLeft()), 1000)
     return () => clearInterval(id)
   }, [])
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentGif(prev => (prev + 1) % gifs.length)
-    }, GIF_DURATION_MS)
-    return () => clearTimeout(timer)
-  }, [currentGif])
 
   return (
     <div style={{
@@ -92,7 +81,7 @@ export function ChallengesPage() {
               backgroundImage: `url('${gif}')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              opacity: i === currentGif ? 0.99 : 0,
+              opacity: i === index % gifs.length ? 0.99 : 0,
               transition: 'opacity 0.8s ease-in-out',
             }}
           />

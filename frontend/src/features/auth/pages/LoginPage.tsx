@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react'
 import { LoginForm } from '../components/LoginForm'
-import {  CYCLE_DURATION_MS } from '../../../hooks/useColorCycle'
+import { useColorCycle } from '../../../hooks/useColorCycle'
 
 const gifs = [
   '/gif.gif',
@@ -10,17 +9,8 @@ const gifs = [
   '/gif4.gif',
 ]
 
-const GIF_DURATION_MS = CYCLE_DURATION_MS
-
 export function LoginPage() {
-  const [currentGif, setCurrentGif] = useState(0)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentGif(prev => (prev + 1) % gifs.length)
-    }, GIF_DURATION_MS)
-    return () => clearTimeout(timer)
-  }, [currentGif])
+  const { index } = useColorCycle()
 
   return (
     <div style={{
@@ -33,7 +23,6 @@ export function LoginPage() {
       isolation: 'isolate',
     }}>
 
-      {/* GIFs de fondo rotando */}
       <div style={{ position: 'fixed', inset: 0, zIndex: -2 }}>
         {gifs.map((gif, i) => (
           <div
@@ -44,14 +33,13 @@ export function LoginPage() {
               backgroundImage: `url('${gif}')`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              opacity: i === currentGif ? 0.99 : 0,
+              opacity: i === index % gifs.length ? 0.99 : 0,
               transition: 'opacity 0.8s ease-in-out',
             }}
           />
         ))}
       </div>
 
-      {/* Overlay oscuro */}
       <div style={{
         position: 'fixed',
         inset: 0,

@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom'
+
 const difficultyStyle: Record<string, { color: string; bg: string }> = {
   Easy:   { color: '#4ade80', bg: 'rgba(74, 222, 128, 0.12)' },
   Medium: { color: '#fbbf24', bg: 'rgba(251, 191, 36, 0.12)' },
@@ -13,6 +15,8 @@ const challenges = [
 ]
 
 export function ChallengeList() {
+  const navigate = useNavigate()
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
       {challenges.map(c => {
@@ -97,6 +101,7 @@ export function ChallengeList() {
             {/* Botón */}
             <button
               disabled={c.locked}
+              onClick={() => !c.locked && navigate(`/challenges/${c.id}`)}
               style={{
                 width: '100%',
                 padding: '9px',

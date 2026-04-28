@@ -1,20 +1,31 @@
-import { useEffect } from 'react'
+import { createContext, useContext, useEffect, useState, createElement, type ReactNode } from 'react'
 
 const palettes = ['red', 'cyan', 'green', 'lightblue', 'lightgreen'] as const
 export type Palette = typeof palettes[number]
 
 export const CYCLE_DURATION_MS = 10000
 
-export function useColorCycle() {
+const ColorCycleContext = createContext(0)
+
+export function ColorCycleProvider({ children }: { children: ReactNode }) {
+  const [index, setIndex] = useState(0)
+
   useEffect(() => {
-    let index = 0
-    document.body.setAttribute('data-palette', palettes[index])
-
+    document.body.setAttribute('data-palette', palettes[0])
     const id = setInterval(() => {
-      index = (index + 1) % palettes.length
-      document.body.setAttribute('data-palette', palettes[index])
+      setIndex(prev => {
+        const next = (prev + 1) % palettes.length
+        document.body.setAttribute('data-palette', palettes[next])
+        return next
+      })
     }, CYCLE_DURATION_MS)
-
     return () => clearInterval(id)
   }, [])
+
+  return createElement(ColorCycleContext.Provider, { value: index }, children)
+}
+
+export function useColorCycle() {
+  const index = useContext(ColorCycleContext)
+  return { index, total: palettes.length }
 }

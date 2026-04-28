@@ -16,7 +16,7 @@ export function Layout() {
         justifyContent: 'space-between',
         padding: '0 32px',
         height: 52,
-        borderBottom: '1px solid #0e2236',
+        borderBottom: '1px solid var(--neon-border)',
         background: '#030810',
         position: 'sticky',
         top: 0,
@@ -26,7 +26,7 @@ export function Layout() {
           fontFamily: 'monospace',
           fontWeight: 700,
           fontSize: 13,
-          color: '#00b4d8',
+          color: 'var(--neon-dim)',
           letterSpacing: '0.15em',
         }}>
           // ARROWHEAD CTF
@@ -38,12 +38,12 @@ export function Layout() {
               key={link.label}
               to={link.to}
               style={({ isActive }) => ({
-                color: isActive ? '#00e5ff' : '#4a8aaa',
+                color: isActive ? 'var(--neon)' : 'var(--neon-border)',
                 fontFamily: 'monospace',
                 fontSize: 11,
                 letterSpacing: '0.18em',
                 textDecoration: 'none',
-                borderBottom: isActive ? '2px solid #00b4d8' : '2px solid transparent',
+                borderBottom: isActive ? '2px solid var(--neon-dim)' : '2px solid transparent',
                 paddingBottom: 4,
                 transition: 'color 0.2s, border-color 0.2s',
               })}
@@ -59,8 +59,8 @@ export function Layout() {
           letterSpacing: '0.15em',
           padding: '5px 14px',
           background: 'transparent',
-          border: '1px solid #00b4d8',
-          color: '#00e5ff',
+          border: '1px solid var(--neon-dim)',
+          color: 'var(--neon)',
           cursor: 'pointer',
           textTransform: 'uppercase',
           borderRadius: 2,
