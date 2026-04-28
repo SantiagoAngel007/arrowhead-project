@@ -1,6 +1,9 @@
 import { motion, type Variants } from 'framer-motion'
 import { ThemeSwitcher } from './components/ThemeSwitcher'
 import { useTheme } from './hooks/useTheme'
+import { RankingTable } from './features/ranking'
+export { RankingTable } from './features/ranking/components/RankingTable'
+import { useRanking } from './features/ranking'
 
 const mockChallenges = [
   { id: 1, level: 'Básico', title: 'Caesar Cipher', points: 100, solved: true },
@@ -8,14 +11,6 @@ const mockChallenges = [
   { id: 3, level: 'Intermedio', title: 'SQL Injection 101', points: 250, solved: false },
   { id: 4, level: 'Intermedio', title: 'XSS Hunter', points: 250, solved: false },
   { id: 5, level: 'Avanzado', title: 'Binary Exploitation', points: 500, solved: false },
-]
-
-const mockRanking = [
-  { pos: 1, alias: 'n3ur0hack', points: 850 },
-  { pos: 2, alias: 'phantom_x', points: 600 },
-  { pos: 3, alias: 'bit_serpent', points: 350 },
-  { pos: 4, alias: 'zeroc00l', points: 200 },
-  { pos: 5, alias: 'ghost_shell', points: 100 },
 ]
 
 const levelColor: Record<string, string> = {
@@ -33,17 +28,10 @@ const fadeUp: Variants = {
   }),
 }
 
-const fadeLeft: Variants = {
-  hidden: { opacity: 0, x: 24 },
-  visible: (i: number) => ({
-    opacity: 1,
-    x: 0,
-    transition: { delay: i * 0.07 + 0.2, duration: 0.35, ease: 'easeOut' as const },
-  }),
-}
 
 function App() {
   useTheme()
+  const { data } = useRanking()
 
   return (
     <div className="app-layout">
@@ -65,7 +53,7 @@ function App() {
         </p>
       </motion.div>
 
-      <div className="main-grid">
+      <div className="flex flex-col gap-8">
         <div>
           <h2 className="section-title">Retos</h2>
           <div className="challenges-list">
@@ -116,49 +104,35 @@ function App() {
         </div>
 
         <div>
-          <h2 className="section-title">Ranking en vivo</h2>
-          <div className="ranking-list">
-            {mockRanking.map((p, i) => (
-              <motion.div
-                key={p.pos}
-                className={`ranking-row ${p.alias === 'n3ur0hack' ? 'ranking-row--me' : ''}`}
-                custom={i}
-                initial="hidden"
-                animate="visible"
-                variants={fadeLeft}
-              >
-                <div className="ranking-row__left">
-                  <span className="ranking-row__pos">
-                    {p.pos === 1 ? '🥇' : p.pos === 2 ? '🥈' : p.pos === 3 ? '🥉' : `#${p.pos}`}
-                  </span>
-                  <span className={`ranking-row__alias ${p.alias === 'n3ur0hack' ? 'ranking-row__alias--me' : ''}`}>
-                    {p.alias}
-                  </span>
-                </div>
-                <span className="ranking-row__points">{p.points}</span>
-              </motion.div>
-            ))}
-          </div>
+          <div className="flex items-center justify-between mb-4">
+              <h2 className="section-title">Marcadores</h2>
 
-          <div className="stats-grid">
-            {[
-              { label: 'Retos resueltos', value: '2 / 5' },
-              { label: 'Tu posición', value: '#1' },
-              { label: 'Tus puntos', value: '200' },
-              { label: 'Participantes', value: '18' },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                className="stat-card"
-                custom={i}
-                initial="hidden"
-                animate="visible"
-                variants={fadeUp}
-              >
-                <div className="stat-card__value">{stat.value}</div>
-                <div className="stat-card__label">{stat.label}</div>
-              </motion.div>
-            ))}
+              <div className="flex gap-2">
+                
+                <button className="px-3 py-1 border border-[var(--accent)] text-[var(--accent)] text-xs">
+                  Global
+                </button>
+                <button className="px-3 py-1 border border-[var(--border)] text-xs opacity-60">
+                  Por nivel
+                </button>
+              </div>
+              
+            </div>
+            <div className="text-xs opacity-60 mb-2">
+              Progreso global basado en todos los niveles
+            </div>
+            <RankingTable />
+
+          <div className="stats-grid mt-4">
+            <div className="stat-card">
+              <div className="stat-card__value">20</div>
+              <div className="stat-card__label">Participantes</div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-card__value">{data?.length}</div>
+              <div className="stat-card__label">Tu posición</div>
+            </div>
           </div>
         </div>
       </div>
