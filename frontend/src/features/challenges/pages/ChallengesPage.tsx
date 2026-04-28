@@ -43,13 +43,31 @@ const sidebarHeader: React.CSSProperties = {
   textTransform: 'uppercase',
 }
 
+const gifs = [
+  '/gif.gif',
+  '/gif1.gif',
+  '/gif2.gif',
+  '/gif3.gif',
+  '/gif4.gif',
+]
+
+const GIF_DURATION_MS = 5000
+
 export function ChallengesPage() {
   const [time, setTime] = useState(getTimeLeft)
+  const [currentGif, setCurrentGif] = useState(0)
 
   useEffect(() => {
     const id = setInterval(() => setTime(getTimeLeft()), 1000)
     return () => clearInterval(id)
   }, [])
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCurrentGif(prev => (prev + 1) % gifs.length)
+    }, GIF_DURATION_MS)
+    return () => clearTimeout(timer)
+  }, [currentGif])
 
   return (
     <div style={{
@@ -59,23 +77,33 @@ export function ChallengesPage() {
       position: 'relative',
       isolation: 'isolate',
     }}>
-      {/* GIF de fondo */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundImage: `url('/cyberpunk creative coding GIF by partyonmarz.gif')`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        opacity: 0.12,
-        zIndex: -2,
-      }} />
+
+      {/* GIFs de fondo rotando */}
+      <div style={{ position: 'fixed', inset: 0, zIndex: -2 }}>
+        {gifs.map((gif, i) => (
+          <div
+            key={gif}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              backgroundImage: `url('${gif}')`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              opacity: i === currentGif ? 0.99 : 0,
+              transition: 'opacity 0.8s ease-in-out',
+            }}
+          />
+        ))}
+      </div>
+
       {/* Overlay oscuro para legibilidad */}
       <div style={{
         position: 'fixed',
         inset: 0,
-        background: 'rgba(2, 6, 14, 0.82)',
+        background: 'rgba(2, 6, 14, 0.65)',
         zIndex: -1,
       }} />
+
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 24, alignItems: 'start' }}>
 
         {/* Columna izquierda */}
