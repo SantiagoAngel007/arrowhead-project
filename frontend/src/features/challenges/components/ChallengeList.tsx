@@ -22,17 +22,19 @@ export function ChallengeList() {
             key={c.id}
             style={{
               background: '#080f1a',
-              border: '1px solid #1a3a5c',
-              borderLeft: '3px solid #00b4d8',
+              border: '1px solid var(--neon-border)',
+              borderLeft: '3px solid var(--neon-dim)',
               borderRadius: 4,
               padding: '16px',
               display: 'flex',
               flexDirection: 'column',
               gap: 12,
-              opacity: c.locked ? 0.6 : 1,
+              opacity: c.locked ? 0.6 : 0.45,
               cursor: c.locked ? 'default' : 'pointer',
-              transition: 'border-color 0.2s, background 0.2s',
+              transition: 'opacity 0.2s, border-color 0.2s, background 0.2s',
             }}
+            onMouseEnter={e => { if (!c.locked) (e.currentTarget as HTMLDivElement).style.opacity = '1' }}
+            onMouseLeave={e => { if (!c.locked) (e.currentTarget as HTMLDivElement).style.opacity = '0.45' }}
           >
             {/* Categoría + candado */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -40,18 +42,18 @@ export function ChallengeList() {
                 fontFamily: 'monospace',
                 fontSize: 9,
                 letterSpacing: '0.2em',
-                color: '#00b4d8',
+                color: 'var(--neon-dim)',
                 textTransform: 'uppercase',
               }}>
                 {c.category}
               </span>
-              {c.locked && <span style={{ fontSize: 14, color: '#2a5070' }}>🔒</span>}
+              {c.locked && <span style={{ fontSize: 14, color: 'var(--neon-border)' }}>🔒</span>}
             </div>
 
             {/* Ícono */}
             <div style={{
               fontSize: 26,
-              color: c.locked ? '#1a3a5c' : '#00b4d8',
+              color: c.locked ? 'var(--neon-border)' : 'var(--neon-dim)',
               lineHeight: 1,
             }}>
               {c.locked ? '⬡' : '◈'}
@@ -86,7 +88,7 @@ export function ChallengeList() {
                 fontFamily: 'monospace',
                 fontSize: 13,
                 fontWeight: 700,
-                color: '#00b4d8',
+                color: 'var(--neon)',
               }}>
                 {c.points} pts
               </span>
@@ -103,9 +105,9 @@ export function ChallengeList() {
                 letterSpacing: '0.15em',
                 textTransform: 'uppercase',
                 fontWeight: 700,
-                background: c.locked ? 'transparent' : '#0a1e30',
-                border: `1px solid ${c.locked ? '#1a3a5c' : '#00b4d8'}`,
-                color: c.locked ? '#2a5070' : '#00e5ff',
+                background: c.locked ? 'transparent' : 'var(--neon-bg)',
+                border: `1px solid ${c.locked ? 'var(--neon-border)' : 'var(--neon-dim)'}`,
+                color: c.locked ? 'var(--neon-border)' : 'var(--neon)',
                 cursor: c.locked ? 'not-allowed' : 'pointer',
                 borderRadius: 2,
                 transition: 'background 0.2s',

@@ -15,39 +15,40 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-      <input
-        className="submit-box__input"
-        placeholder="Nombre completo"
-        value={form.nombre}
-        onChange={set('nombre')}
-        required
-      />
-      <input
-        className="submit-box__input"
-        type="email"
-        placeholder="Correo electrónico"
-        value={form.correo}
-        onChange={set('correo')}
-        required
-      />
-      <input
-        className="submit-box__input"
-        placeholder="Colegio"
-        value={form.colegio}
-        onChange={set('colegio')}
-        required
-      />
-      <input
-        className="submit-box__input"
-        placeholder="Apodo"
-        value={form.apodo}
-        onChange={set('apodo')}
-        required
-      />
+      {(['nombre', 'correo', 'colegio', 'apodo'] as const).map((field, i) => (
+        <input
+          key={field}
+          className="submit-box__input"
+          type={field === 'correo' ? 'email' : 'text'}
+          placeholder={['Nombre completo', 'Correo electrónico', 'Colegio', 'Apodo'][i]}
+          value={form[field]}
+          onChange={set(field)}
+          required
+          style={{
+            background: 'rgba(0, 0, 0, 0.5)',
+            border: '1px solid var(--neon-border)',
+            color: 'var(--neon)',
+            fontFamily: 'monospace',
+          }}
+        />
+      ))}
       <button
         type="submit"
         className="submit-box__btn"
-        style={{ width: '100%', padding: '12px', marginTop: 8 }}
+        style={{
+          width: '100%',
+          padding: '12px',
+          marginTop: 8,
+          background: 'var(--neon-bg)',
+          border: '1px solid var(--neon-dim)',
+          color: 'var(--neon)',
+          fontFamily: 'monospace',
+          letterSpacing: '0.15em',
+          textTransform: 'uppercase',
+          cursor: 'pointer',
+          borderRadius: 2,
+          transition: 'background 0.2s',
+        }}
       >
         Entrar al CTF
       </button>

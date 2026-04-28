@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChallengeList } from '../components/ChallengeList'
+import { useColorCycle, CYCLE_DURATION_MS } from '../../../hooks/useColorCycle'
+
 
 const TARGET = new Date('2026-05-25T23:59:59')
 
@@ -28,18 +30,18 @@ const pad = (n: number) => String(n).padStart(2, '0')
 
 const sidebar: React.CSSProperties = {
   background: '#060d16',
-  border: '1px solid #0e2236',
+  border: '1px solid var(--neon-border)',
   borderRadius: 4,
   overflow: 'hidden',
 }
 
 const sidebarHeader: React.CSSProperties = {
   padding: '10px 14px',
-  borderBottom: '1px solid #0e2236',
+  borderBottom: '1px solid var(--neon-border)',
   fontFamily: 'monospace',
   fontSize: 10,
   letterSpacing: '0.2em',
-  color: '#4a8aaa',
+  color: 'var(--neon-dim)',
   textTransform: 'uppercase',
 }
 
@@ -51,11 +53,12 @@ const gifs = [
   '/gif4.gif',
 ]
 
-const GIF_DURATION_MS = 5000
+const GIF_DURATION_MS = CYCLE_DURATION_MS
 
 export function ChallengesPage() {
   const [time, setTime] = useState(getTimeLeft)
   const [currentGif, setCurrentGif] = useState(0)
+  useColorCycle()
 
   useEffect(() => {
     const id = setInterval(() => setTime(getTimeLeft()), 1000)
@@ -112,7 +115,7 @@ export function ChallengesPage() {
             fontFamily: 'monospace',
             fontSize: 22,
             fontWeight: 700,
-            color: '#c8d8e8',
+            color: 'var(--neon)',
             letterSpacing: '0.05em',
             marginBottom: 20,
           }}>
@@ -125,12 +128,16 @@ export function ChallengesPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
 
           {/* Countdown */}
-          <div style={{ ...sidebar, padding: '18px 14px', textAlign: 'center' }}>
+          <div
+            style={{ ...sidebar, padding: '18px 14px', textAlign: 'center', opacity: 0.45, transition: 'opacity 0.2s' }}
+            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.opacity = '1'}
+            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.opacity = '0.45'}
+          >
             <div style={{
               fontFamily: 'monospace',
               fontSize: 9,
               letterSpacing: '0.2em',
-              color: '#4a8aaa',
+              color: 'var(--neon-dim)',
               textTransform: 'uppercase',
               marginBottom: 12,
             }}>
@@ -140,7 +147,7 @@ export function ChallengesPage() {
               fontFamily: 'monospace',
               fontSize: 20,
               fontWeight: 700,
-              color: '#00e5ff',
+              color: 'var(--neon)',
               letterSpacing: '0.05em',
               whiteSpace: 'nowrap',
             }}>
@@ -149,7 +156,7 @@ export function ChallengesPage() {
             <div style={{
               fontFamily: 'monospace',
               fontSize: 9,
-              color: '#2a5a7a',
+              color: 'var(--neon-border)',
               marginTop: 8,
               letterSpacing: '0.15em',
               display: 'flex',
@@ -161,7 +168,11 @@ export function ChallengesPage() {
           </div>
 
           {/* Clasificación en vivo */}
-          <div style={sidebar}>
+          <div
+            style={{ ...sidebar, opacity: 0.45, transition: 'opacity 0.2s' }}
+            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.opacity = '1'}
+            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.opacity = '0.45'}
+          >
             <div style={sidebarHeader}>▶ Clasificación en vivo</div>
             {ranking.map(r => (
               <div
@@ -171,7 +182,7 @@ export function ChallengesPage() {
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '10px 14px',
-                  borderBottom: '1px solid #0e2236',
+                  borderBottom: '1px solid var(--neon-border)',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -197,7 +208,7 @@ export function ChallengesPage() {
                   fontFamily: 'monospace',
                   fontWeight: 700,
                   fontSize: 13,
-                  color: '#00b4d8',
+                  color: 'var(--neon)',
                 }}>
                   {r.points}
                 </span>
