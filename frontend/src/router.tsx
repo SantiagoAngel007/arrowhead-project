@@ -1,6 +1,5 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { Layout } from './components/Layout'
-import App from './App'
 import { LoginPage } from './features/auth/pages/LoginPage'
 import { ChallengesPage } from './features/challenges/pages/ChallengesPage'
 import { RankingPage } from './features/ranking/pages/RankingPage'
@@ -10,7 +9,7 @@ import { AdminPage } from './features/admin/pages/AdminPage'
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: <Navigate to="/login" replace />,
   },
   {
     path: '/login',
