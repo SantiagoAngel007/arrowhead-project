@@ -45,11 +45,11 @@ const sidebarHeader: React.CSSProperties = {
 }
 
 const gifs = [
-  '/gif.gif',
-  '/gif1.gif',
-  '/gif2.gif',
-  '/gif3.gif',
-  '/gif4.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif1.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif2.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif3.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif4.gif',
 ]
 
 export function ChallengesPage() {

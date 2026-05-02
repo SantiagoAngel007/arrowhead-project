@@ -3,7 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { getChallengeById } from '../data/mockChallenges'
 import { useColorCycle } from '../../../hooks/useColorCycle'
 
-const gifs = ['/gif.gif', '/gif1.gif', '/gif2.gif', '/gif3.gif', '/gif4.gif']
+const gifs = [
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif1.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif2.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif3.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif4.gif',
+]
 
 const difficultyStyle: Record<string, { color: string; bg: string }> = {
   Easy:   { color: '#4ade80', bg: 'rgba(74, 222, 128, 0.12)' },
