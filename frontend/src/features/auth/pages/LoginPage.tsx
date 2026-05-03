@@ -1,17 +1,65 @@
+import { useEffect, useRef } from 'react'
 import { LoginForm } from '../components/LoginForm'
-import { useColorCycle } from '../../../hooks/useColorCycle'
 
-const gifs = [
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif1.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif2.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif3.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif4.gif',
-]
+function BinaryRain() {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+
+    const resize = () => {
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+    }
+    resize()
+    window.addEventListener('resize', resize)
+
+    const FONT_SIZE = 14
+    const cols = Math.floor(canvas.width / FONT_SIZE)
+    const drops: number[] = Array(cols).fill(1)
+
+    const tick = () => {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)'
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      ctx.font = `${FONT_SIZE}px "Courier New", monospace`
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = Math.random() > 0.5 ? '1' : '0'
+        const brightness = Math.random()
+        if (brightness > 0.92) {
+          ctx.fillStyle = '#ffffff'
+        } else if (brightness > 0.7) {
+          ctx.fillStyle = '#4a9e5c'
+        } else {
+          ctx.fillStyle = '#1a5c2a'
+        }
+        ctx.fillText(char, i * FONT_SIZE, drops[i] * FONT_SIZE)
+        if (drops[i] * FONT_SIZE > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0
+        }
+        drops[i]++
+      }
+    }
+
+    const interval = setInterval(tick, 40)
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('resize', resize)
+    }
+  }, [])
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: 'fixed', inset: 0, zIndex: 0 }}
+    />
+  )
+}
 
 export function LoginPage() {
-  const { index } = useColorCycle()
-
   return (
     <div style={{
       minHeight: '100svh',
@@ -19,52 +67,35 @@ export function LoginPage() {
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px',
+      background: '#000',
       position: 'relative',
-      isolation: 'isolate',
     }}>
+      <BinaryRain />
 
-      <div style={{ position: 'fixed', inset: 0, zIndex: -2 }}>
-        {gifs.map((gif, i) => (
-          <div
-            key={gif}
-            style={{
-              position: 'absolute',
-              inset: 0,
-              backgroundImage: `url('${gif}')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-              opacity: i === index % gifs.length ? 0.99 : 0,
-              transition: 'opacity 0.8s ease-in-out',
-            }}
-          />
-        ))}
-      </div>
-
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(2, 6, 14, 0.65)',
-        zIndex: -1,
-      }} />
-
-      <div style={{
-        width: '100%',
-        maxWidth: '420px',
-        border: '1px solid var(--neon-border)',
-        borderRadius: '8px',
-        padding: '36px 32px',
-        background: 'rgba(6, 13, 22, 0.85)',
-        opacity: 0.45,
-        transition: 'opacity 0.2s',
-      }}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 1,
+          width: '100%',
+          maxWidth: '420px',
+          border: '1px solid #1e3a1e',
+          borderRadius: '4px',
+          padding: '36px 32px',
+          background: 'rgba(0, 0, 0, 0.88)',
+          backdropFilter: 'blur(6px)',
+          opacity: 0.45,
+          transition: 'opacity 0.2s',
+        }}
         onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.opacity = '1'}
         onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.opacity = '0.45'}
       >
-        <span className="header-badge" style={{ color: 'var(--neon)', borderColor: 'var(--neon-border)' }}>
+        <p style={{ fontSize: 11, color: '#4a9e5c', letterSpacing: '0.3em', marginBottom: 8 }}>
           ARROWHEAD CTF
-        </span>
-        <h1 style={{ fontSize: '32px', margin: '12px 0 4px', color: 'var(--neon)' }}>Bienvenido</h1>
-        <p style={{ marginBottom: '28px', fontSize: '14px', color: 'var(--neon-dim)' }}>
+        </p>
+        <h1 style={{ fontSize: '28px', margin: '0 0 4px', color: '#e8f5e8', fontFamily: '"Courier New", monospace', letterSpacing: '0.1em' }}>
+          Bienvenido
+        </h1>
+        <p style={{ marginBottom: '28px', fontSize: '13px', color: '#4a9e5c', fontFamily: '"Courier New", monospace' }}>
           Completa tu registro para comenzar los retos
         </p>
         <LoginForm />

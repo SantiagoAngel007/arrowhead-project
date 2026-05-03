@@ -1,8 +1,19 @@
 import { useEffect, useState } from 'react'
-import { ChallengeList } from '../components/ChallengeList'
 import { useColorCycle } from '../../../hooks/useColorCycle'
+import { Info } from '../../../components/Info'
+import { LevelCard } from '../../../components/LevelCard'
 
 const TARGET = new Date('2026-05-25T23:59:59')
+
+const gifs = [
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif1.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif2.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif3.gif',
+  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif4.gif',
+]
+
+const sideLinks = ['Información General', 'Reglas', 'FAQ']
 
 const ranking = [
   { pos: 1, alias: 'CodeMaster_99', points: 1250 },
@@ -13,44 +24,27 @@ const ranking = [
 ]
 
 const posColor = (pos: number) =>
-  pos === 1 ? '#ffd700' : pos === 2 ? '#c0c0c0' : pos === 3 ? '#cd7f32' : '#4a6a8a'
+  pos === 1 ? '#ffd700' : pos === 2 ? '#c0c0c0' : pos === 3 ? '#cd7f32' : undefined
+
+const cardLinks = [
+  { level: 'Nivel 1', title: 'INICIACIÓN',  description: 'Retos básicos para familiarizarte con el formato CTF', difficulty: 'Fácil'   as const, sideText: 'Ideal para principiantes' },
+  { level: 'Nivel 2', title: 'EXPLORACIÓN', description: 'Retos de dificultad media que te ayudarán a aplicar técnicas', difficulty: 'Media'   as const, sideText: 'Pon a prueba tus habilidades' },
+  { level: 'Nivel 3', title: 'DESAFÍO',     description: 'Retos avanzados que requieren mayor análisis', difficulty: 'Difícil' as const, sideText: 'Para quienes buscan un desafío real' },
+  { level: 'Nivel 4', title: 'MAESTRO',     description: 'Los retos más complejos del CTF', difficulty: 'Experto' as const, sideText: 'Máximo nivel de exigencia' },
+]
 
 function getTimeLeft() {
   const diff = Math.max(0, TARGET.getTime() - Date.now())
   return {
-    d: Math.floor(diff / 86400000),
-    h: Math.floor((diff % 86400000) / 3600000),
+    h: Math.floor(diff / 3600000),
     m: Math.floor((diff % 3600000) / 60000),
     s: Math.floor((diff % 60000) / 1000),
+    total: diff,
   }
 }
 
 const pad = (n: number) => String(n).padStart(2, '0')
-
-const sidebar: React.CSSProperties = {
-  background: '#060d16',
-  border: '1px solid var(--neon-border)',
-  borderRadius: 4,
-  overflow: 'hidden',
-}
-
-const sidebarHeader: React.CSSProperties = {
-  padding: '10px 14px',
-  borderBottom: '1px solid var(--neon-border)',
-  fontFamily: 'monospace',
-  fontSize: 10,
-  letterSpacing: '0.2em',
-  color: 'var(--neon-dim)',
-  textTransform: 'uppercase',
-}
-
-const gifs = [
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif1.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif2.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif3.gif',
-  'https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/gif4.gif',
-]
+const TOTAL_DURATION = TARGET.getTime() - new Date('2026-04-01').getTime()
 
 export function ChallengesPage() {
   const [time, setTime] = useState(getTimeLeft)
@@ -62,150 +56,153 @@ export function ChallengesPage() {
   }, [])
 
   return (
-    <div style={{
-      minHeight: 'calc(100svh - 56px)',
-      margin: '-32px',
-      padding: '32px',
-      position: 'relative',
-      isolation: 'isolate',
-    }}>
-
-      {/* GIFs de fondo rotando */}
+    <div
+      className="font-mono"
+      style={{ minHeight: 'calc(100svh - 56px)', margin: '-32px', position: 'relative', isolation: 'isolate' }}
+    >
+      {/* GIFs de fondo */}
       <div style={{ position: 'fixed', inset: 0, zIndex: -2 }}>
         {gifs.map((gif, i) => (
           <div
             key={gif}
             style={{
-              position: 'absolute',
-              inset: 0,
+              position: 'absolute', inset: 0,
               backgroundImage: `url('${gif}')`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundSize: 'cover', backgroundPosition: 'center',
               opacity: i === index % gifs.length ? 0.99 : 0,
               transition: 'opacity 0.8s ease-in-out',
             }}
           />
         ))}
       </div>
+      <div style={{ position: 'fixed', inset: 0, background: 'rgba(2,6,14,0.72)', zIndex: -1 }} />
 
-      {/* Overlay oscuro para legibilidad */}
-      <div style={{
-        position: 'fixed',
-        inset: 0,
-        background: 'rgba(2, 6, 14, 0.65)',
-        zIndex: -1,
-      }} />
+      <div className="flex flex-col md:flex-row p-6 gap-6">
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 24, alignItems: 'start' }}>
+        {/* ── Sidebar ── */}
+        <aside className="md:w-64 flex flex-col gap-4 shrink-0">
 
-        {/* Columna izquierda */}
-        <div>
-          <h2 style={{
-            fontFamily: 'monospace',
-            fontSize: 22,
-            fontWeight: 700,
-            color: 'var(--neon)',
-            letterSpacing: '0.05em',
-            marginBottom: 20,
-          }}>
-            RETOS ACTIVOS
-          </h2>
-          <ChallengeList />
-        </div>
-
-        {/* Columna derecha */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Links de info */}
+          <div style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid var(--neon-border)' }} className="p-4">
+            <p className="text-[10px] uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--neon-dim)' }}>
+              Navegación
+            </p>
+            <ul className="flex flex-col space-y-1">
+              {sideLinks.map(label => (
+                <li
+                  key={label}
+                  className="flex items-center gap-3 p-3 text-gray-400 cursor-pointer transition-all duration-200"
+                  style={{ borderBottom: '1px solid var(--neon-border)' }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLLIElement
+                    el.style.background = 'var(--neon-bg)'
+                    el.style.color = 'var(--neon)'
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLLIElement
+                    el.style.background = ''
+                    el.style.color = ''
+                  }}
+                >
+                  <span className="text-sm font-bold tracking-widest uppercase">{label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
 
           {/* Countdown */}
           <div
-            style={{ ...sidebar, padding: '18px 14px', textAlign: 'center', opacity: 0.45, transition: 'opacity 0.2s' }}
-            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.opacity = '1'}
-            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.opacity = '0.45'}
+            className="p-6 text-center"
+            style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid var(--neon-border)' }}
           >
-            <div style={{
-              fontFamily: 'monospace',
-              fontSize: 9,
-              letterSpacing: '0.2em',
-              color: 'var(--neon-dim)',
-              textTransform: 'uppercase',
-              marginBottom: 12,
-            }}>
-              Próximo evento finaliza en
+            <p className="text-[10px] font-bold tracking-[0.2em] mb-5 uppercase" style={{ color: 'var(--neon-dim)' }}>
+              Tiempo Restante
+            </p>
+            <div className="flex justify-around items-center mb-4 px-2">
+              {[
+                { val: pad(time.h), label: 'HRS' },
+                { val: ':', label: null },
+                { val: pad(time.m), label: 'MIN' },
+                { val: ':', label: null },
+                { val: pad(time.s), label: 'SEG' },
+              ].map((item, i) =>
+                item.label ? (
+                  <div key={i} className="flex flex-col items-center">
+                    <span className="text-3xl font-bold" style={{ color: 'var(--neon)' }}>{item.val}</span>
+                    <span className="text-[10px] text-gray-500">{item.label}</span>
+                  </div>
+                ) : (
+                  <span key={i} className="text-2xl font-bold mb-4 animate-pulse" style={{ color: 'var(--neon)' }}>:</span>
+                )
+              )}
             </div>
-            <div style={{
-              fontFamily: 'monospace',
-              fontSize: 20,
-              fontWeight: 700,
-              color: 'var(--neon)',
-              letterSpacing: '0.05em',
-              whiteSpace: 'nowrap',
-            }}>
-              {pad(time.d)} : {pad(time.h)} : {pad(time.m)} : {pad(time.s)}
-            </div>
-            <div style={{
-              fontFamily: 'monospace',
-              fontSize: 9,
-              color: 'var(--neon-border)',
-              marginTop: 8,
-              letterSpacing: '0.15em',
-              display: 'flex',
-              justifyContent: 'center',
-              gap: 18,
-            }}>
-              <span>DÍAS</span><span>HRS</span><span>MIN</span><span>SEG</span>
+            <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--neon-border)' }}>
+              <div
+                className="h-full transition-all duration-1000 ease-linear"
+                style={{
+                  background: 'var(--neon)',
+                  boxShadow: '0 0 10px var(--neon)',
+                  width: `${Math.max(0, Math.min(100, (time.total / TOTAL_DURATION) * 100))}%`,
+                }}
+              />
             </div>
           </div>
 
-          {/* Clasificación en vivo */}
-          <div
-            style={{ ...sidebar, opacity: 0.45, transition: 'opacity 0.2s' }}
-            onMouseEnter={e => (e.currentTarget as HTMLDivElement).style.opacity = '1'}
-            onMouseLeave={e => (e.currentTarget as HTMLDivElement).style.opacity = '0.45'}
-          >
-            <div style={sidebarHeader}>▶ Clasificación en vivo</div>
+          {/* Ranking en vivo */}
+          <div style={{ background: 'rgba(0,0,0,0.5)', border: '1px solid var(--neon-border)', overflow: 'hidden' }}>
+            <div
+              className="px-4 py-3 text-[10px] uppercase tracking-[0.2em]"
+              style={{ borderBottom: '1px solid var(--neon-border)', color: 'var(--neon-dim)' }}
+            >
+              ▶ Clasificación en vivo
+            </div>
             {ranking.map(r => (
               <div
                 key={r.pos}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '10px 14px',
-                  borderBottom: '1px solid var(--neon-border)',
-                }}
+                className="flex items-center justify-between px-4 py-3"
+                style={{ borderBottom: '1px solid var(--neon-border)' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <span style={{
-                    fontFamily: 'monospace',
-                    fontWeight: 700,
-                    fontSize: 14,
-                    color: posColor(r.pos),
-                    width: 16,
-                    textAlign: 'center',
-                  }}>
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-sm w-4 text-center" style={{ color: posColor(r.pos) ?? 'var(--neon-dim)' }}>
                     {r.pos}
                   </span>
-                  <span style={{
-                    fontFamily: 'monospace',
-                    fontSize: 12,
-                    color: '#8aaac8',
-                  }}>
-                    {r.alias}
-                  </span>
+                  <span className="text-xs" style={{ color: '#8aaac8' }}>{r.alias}</span>
                 </div>
-                <span style={{
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  fontSize: 13,
-                  color: 'var(--neon)',
-                }}>
-                  {r.points}
-                </span>
+                <span className="font-bold text-xs" style={{ color: 'var(--neon)' }}>{r.points}</span>
               </div>
             ))}
           </div>
 
-        </div>
+        </aside>
+
+        {/* ── Contenido principal ── */}
+        <main className="flex-1 space-y-10">
+          <Info />
+
+          <div className="text-center space-y-2">
+            <h2 className="font-bold text-xl tracking-widest uppercase" style={{ color: 'var(--neon)' }}>
+              Niveles de Retos
+            </h2>
+            <p className="text-gray-500 text-sm max-w-xl mx-auto">
+              El CTF está organizado en niveles para que puedas progresar a tu propio ritmo.
+            </p>
+          </div>
+
+          <LevelCard links={cardLinks} />
+
+          <div className="text-center space-y-2 pb-8">
+            <h2 className="font-bold text-xl tracking-widest uppercase" style={{ color: 'var(--neon)' }}>
+              Recuerda
+            </h2>
+            <p className="text-gray-500 text-sm max-w-xl mx-auto">
+              Puedes consultar las reglas completas en la sección de Reglas.
+            </p>
+            <p className="text-xs font-bold tracking-widest uppercase" style={{ color: 'var(--neon-dim)' }}>
+              ¡Diviértete, colabora y que gane el mejor!
+            </p>
+          </div>
+        </main>
+
       </div>
     </div>
   )

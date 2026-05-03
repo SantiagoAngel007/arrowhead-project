@@ -25,10 +25,10 @@ export function LoginForm() {
           onChange={set(field)}
           required
           style={{
-            background: 'rgba(0, 0, 0, 0.5)',
-            border: '1px solid var(--neon-border)',
-            color: 'var(--neon)',
-            fontFamily: 'monospace',
+            background: 'rgba(10, 20, 10, 0.9)',
+            border: '1px solid #2a3a2a',
+            color: '#c8e6c8',
+            fontFamily: '"Courier New", monospace',
           }}
         />
       ))}
@@ -39,9 +39,9 @@ export function LoginForm() {
           width: '100%',
           padding: '12px',
           marginTop: 8,
-          background: 'var(--neon-bg)',
-          border: '1px solid var(--neon-dim)',
-          color: 'var(--neon)',
+          background: '#2a5c34',
+          border: 'none',
+          color: '#c8f0c8',
           fontFamily: 'monospace',
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
