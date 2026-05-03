@@ -62,3 +62,55 @@ export const getChallenges = async () => {
   return res.data
 }
 
+Sugerencias
+ Problemas detectados
+                      
+  ┌──────────────────────────────────────┬─────────────────────────────────────────────────┐
+  │               Problema               │               Archivos afectados                │   
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ App.tsx es código muerto — no está   │ App.tsx                                         │   
+  │ en el router, duplica UI             │                                                 │
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤   
+  │ useColorCycle instanciado dos veces  │                                                 │   
+  │ — en Root (main.tsx) y en            │ main.tsx, ChallengesPage.tsx                    │   
+  │ ChallengesPage; generan dos          │                                                 │   
+  │ intervalos independientes            │                                                 │   
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Archivos duplicados/stubs en raíz de │ auth/LoginForm.tsx,                             │   
+  │  features — versiones viejas sin     │ challenges/ChallengeList.tsx,                   │
+  │ usar                                 │ ranking/RankingTable.tsx, info/InfoPanel.tsx    │
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ RankingPage — completamente sin      │ ranking/components/RankingTable.tsx             │   
+  │ diseñar (solo <ol> con 2 entradas)   │                                                 │
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤   
+  │ InfoPage — completamente sin diseñar │ info/components/InfoPanel.tsx                   │
+  │  (texto plano)                       │                                                 │
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ AdminPage — completamente sin        │ admin/components/AdminDashboard.tsx             │
+  │ diseñar (botones sin estilo)         │                                                 │   
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ ThemeSwitcher — solo se usa en el    │                                                 │   
+  │ App.tsx muerto, no en el Layout      │ ThemeSwitcher.tsx                               │   
+  │ activo                               │                                                 │
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤   
+  │ Nav bug en Layout — "INICIO" y       │ Layout.tsx:4-5                                  │
+  │ "RETOS" apuntan ambos a /challenges  │                                                 │   
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Botón ▶ ACCEDER — sin funcionalidad  │ Layout.tsx:56-69                                │   
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤   
+  │ Sin autenticación real — LoginForm   │ LoginForm.tsx, router.tsx                       │
+  │ navega directamente sin guards       │                                                 │   
+  ├──────────────────────────────────────┼─────────────────────────────────────────────────┤
+  │ Datos hardcodeados — los services    │                                                 │   
+  │ existen con USE_MOCK = true pero no  │ *.service.ts                                    │   
+  │ hay integración real                 │                                                 │
+  └──────────────────────────────────────┴─────────────────────────────────────────────────┘   
+                  
+  ---
+  Prioridades sugeridas
+                                                                                               
+  1. Eliminar App.tsx y los stubs duplicados en raíces de features.
+  2. Mover useColorCycle a contexto para que sea una sola instancia compartida entre LoginPage 
+  y ChallengesPage.                                                                            
+  3. Diseñar RankingPage e InfoPage — son las dos páginas más vacías.                          
+  4. Conectar el botón ▶ ACCEDER y añadir guards de ruta.   
