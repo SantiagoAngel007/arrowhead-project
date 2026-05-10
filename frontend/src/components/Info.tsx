@@ -1,6 +1,17 @@
 import logoU from '../assets/LogoU.png'
+import { useColorCycle } from '../hooks/useColorCycle'
+
+const neonFilters = [
+  'sepia(1) saturate(6) hue-rotate(300deg) brightness(1.2)',  // red
+  'sepia(1) saturate(6) hue-rotate(160deg) brightness(1.2)',  // cyan
+  'sepia(1) saturate(6) hue-rotate(90deg)  brightness(1.2)',  // green
+  'sepia(1) saturate(4) hue-rotate(190deg) brightness(1.2)',  // lightblue
+  'sepia(1) saturate(4) hue-rotate(110deg) brightness(1.2)',  // lightgreen
+]
 
 export function Info() {
+  const { index } = useColorCycle()
+
   return (
     <section
       className="relative w-full max-w-4xl mx-auto p-8 md:p-10 font-mono"
@@ -14,7 +25,12 @@ export function Info() {
 
       <div className="flex flex-col md:flex-row items-center gap-8">
         <div className="shrink-0">
-          <img src={logoU} alt="Logo Icesi" className="w-48 object-contain" />
+          <img
+            src={logoU}
+            alt="Logo Icesi"
+            className="w-48 object-contain"
+            style={{ filter: neonFilters[index], transition: 'filter 0.8s ease-in-out' }}
+          />
         </div>
         <div className="flex-1 text-left">
           <h1 className="text-3xl md:text-4xl font-bold tracking-tighter uppercase mb-1"
