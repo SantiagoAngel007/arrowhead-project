@@ -4,6 +4,7 @@ interface ChallengeRef {
   id: number
   name: string
   locked?: boolean
+  to?: string
 }
 
 interface LevelData {
@@ -94,7 +95,7 @@ export function LevelCard({ links }: LevelCardProps) {
                 {link.challenges.map(ch => (
                   <button
                     key={ch.id}
-                    onClick={() => !ch.locked && navigate(`/challenges/${ch.id}`)}
+                    onClick={() => !ch.locked && navigate(ch.to ?? `/challenges/${ch.id}`)}
                     disabled={ch.locked}
                     className="text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200"
                     style={{

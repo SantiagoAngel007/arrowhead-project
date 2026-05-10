@@ -50,7 +50,7 @@ const cardLinks = [
     description: 'Retos avanzados que requieren mayor análisis',
     difficulty: 'Difícil' as const, sideText: 'Para quienes buscan un desafío real',
     challenges: [
-      { id: 4, name: 'Defensa y Ataque Activa', locked: false },
+      { id: 4, name: 'Defensa y Ataque Activa', locked: false, to: '/challenges/ataque-defensa' },
     ],
   },
   {
