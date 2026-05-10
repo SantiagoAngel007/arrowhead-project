@@ -1,3 +1,11 @@
+import { useNavigate } from 'react-router-dom'
+
+interface ChallengeRef {
+  id: number
+  name: string
+  locked?: boolean
+}
+
 interface LevelData {
   level: string
   title: string
@@ -5,6 +13,7 @@ interface LevelData {
   difficulty: 'Fácil' | 'Media' | 'Difícil' | 'Experto'
   sideText: string
   img?: string
+  challenges?: ChallengeRef[]
 }
 
 interface LevelCardProps {
@@ -22,6 +31,8 @@ const difficultyColor = (diff: string): React.CSSProperties => {
 }
 
 export function LevelCard({ links }: LevelCardProps) {
+  const navigate = useNavigate()
+
   return (
     <section className="p-4 space-y-6">
       {links.map((link, index) => (
@@ -74,10 +85,47 @@ export function LevelCard({ links }: LevelCardProps) {
                 {link.difficulty}
               </span>
             </div>
-            <p className="text-gray-400 text-xs leading-relaxed">
+            <p className="text-gray-400 text-xs leading-relaxed mb-4">
               {link.sideText}.<br />
               <span className="text-gray-600">Aprende y gana confianza.</span>
             </p>
+            {link.challenges && link.challenges.length > 0 ? (
+              <div className="flex flex-col gap-2">
+                {link.challenges.map(ch => (
+                  <button
+                    key={ch.id}
+                    onClick={() => !ch.locked && navigate(`/challenges/${ch.id}`)}
+                    disabled={ch.locked}
+                    className="text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-200"
+                    style={{
+                      border: '1px solid var(--neon-border)',
+                      color: ch.locked ? '#4b5563' : 'var(--neon)',
+                      background: 'transparent',
+                      cursor: ch.locked ? 'not-allowed' : 'pointer',
+                      opacity: ch.locked ? 0.5 : 1,
+                    }}
+                    onMouseEnter={e => {
+                      if (!ch.locked) {
+                        const el = e.currentTarget
+                        el.style.background = 'var(--neon-bg)'
+                        el.style.borderColor = 'var(--neon)'
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget
+                      el.style.background = 'transparent'
+                      el.style.borderColor = 'var(--neon-border)'
+                    }}
+                  >
+                    {ch.locked ? '🔒 ' : '▶ '}{ch.name}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[10px] uppercase tracking-widest" style={{ color: 'var(--neon-dim)' }}>
+                Próximamente
+              </p>
+            )}
           </div>
         </div>
       ))}

@@ -27,10 +27,38 @@ const posColor = (pos: number) =>
   pos === 1 ? '#ffd700' : pos === 2 ? '#c0c0c0' : pos === 3 ? '#cd7f32' : undefined
 
 const cardLinks = [
-  { level: 'Nivel 1', title: 'INICIACIÓN',  description: 'Retos básicos para familiarizarte con el formato CTF', difficulty: 'Fácil'   as const, sideText: 'Ideal para principiantes' },
-  { level: 'Nivel 2', title: 'EXPLORACIÓN', description: 'Retos de dificultad media que te ayudarán a aplicar técnicas', difficulty: 'Media'   as const, sideText: 'Pon a prueba tus habilidades' },
-  { level: 'Nivel 3', title: 'DESAFÍO',     description: 'Retos avanzados que requieren mayor análisis', difficulty: 'Difícil' as const, sideText: 'Para quienes buscan un desafío real' },
-  { level: 'Nivel 4', title: 'MAESTRO',     description: 'Los retos más complejos del CTF', difficulty: 'Experto' as const, sideText: 'Máximo nivel de exigencia' },
+  {
+    level: 'Nivel 1', title: 'INICIACIÓN',
+    description: 'Retos básicos para familiarizarte con el formato CTF',
+    difficulty: 'Fácil' as const, sideText: 'Ideal para principiantes',
+    challenges: [
+      { id: 1, name: 'Cuestionario de Iniciación', locked: false },
+    ],
+  },
+  {
+    level: 'Nivel 2', title: 'EXPLORACIÓN',
+    description: 'Retos de dificultad media que te ayudarán a aplicar técnicas',
+    difficulty: 'Media' as const, sideText: 'Pon a prueba tus habilidades',
+    challenges: [
+      { id: 2, name: 'Geo Guessing',        locked: false },
+      { id: 3, name: 'Análisis de Tráfico', locked: false },
+      { id: 5, name: 'Detección de Fraude', locked: false },
+    ],
+  },
+  {
+    level: 'Nivel 3', title: 'DESAFÍO',
+    description: 'Retos avanzados que requieren mayor análisis',
+    difficulty: 'Difícil' as const, sideText: 'Para quienes buscan un desafío real',
+    challenges: [
+      { id: 4, name: 'Defensa y Ataque Activa', locked: false },
+    ],
+  },
+  {
+    level: 'Nivel 4', title: 'MAESTRO',
+    description: 'Los retos más complejos del CTF',
+    difficulty: 'Experto' as const, sideText: 'Máximo nivel de exigencia',
+    challenges: [],
+  },
 ]
 
 function getTimeLeft() {
