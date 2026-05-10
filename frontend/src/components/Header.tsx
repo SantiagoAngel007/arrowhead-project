@@ -29,7 +29,7 @@ export default function Header({ sessionTime }: HeaderProps) {
             className="text-sm font-bold tracking-wider font-orbitron"
             style={{ color: '#00ff88' }}
           >
-            CYBERDEFENDER QUEST
+            CYBERDEFENDER INFO
           </span>
         </div>
       </div>
