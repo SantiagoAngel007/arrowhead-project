@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
+import { TriviaHUD } from "../../trivia/components/TriviaHUD"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface HexData {
@@ -237,8 +239,71 @@ const ROW_BG: Record<string, string> = {
   HTTP: "rgba(0,25,5,0.5)",
 }
 
+// ── Question Panel ────────────────────────────────────────────────────────────
+
+const WS_OPTIONS = [
+  { id: "A", text: "HTTP" },
+  { id: "B", text: "TELNET" },
+  { id: "C", text: "SSH" },
+  { id: "D", text: "FTP" },
+]
+
+function QuestionPanel() {
+  const [selected, setSelected] = useState<string | null>(null)
+  const [hovered, setHovered] = useState<string | null>(null)
+
+  return (
+    <div style={{
+      flex: 1, minWidth: 200,
+      background: "#070e1a",
+      border: "1px solid #1a3a5a",
+      borderRadius: 4,
+      padding: "12px 14px",
+      display: "flex",
+      flexDirection: "column",
+      gap: 8,
+      fontFamily: '"Courier New", Consolas, monospace',
+    }}>
+      <div style={{ fontSize: 9, color: "#4a7a9a", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 2 }}>
+        CHALLENGE 3 — PREGUNTA
+      </div>
+      <div style={{ fontSize: 11, color: "#c8d8e8", lineHeight: 1.6, marginBottom: 4 }}>
+        ¿Qué protocolo transmitió las credenciales en texto plano?
+      </div>
+      {WS_OPTIONS.map(opt => {
+        const isSel = selected === opt.id
+        const isHov = hovered === opt.id && !isSel
+        return (
+          <button
+            key={opt.id}
+            onClick={() => setSelected(opt.id)}
+            onMouseEnter={() => setHovered(opt.id)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              textAlign: "left",
+              padding: "6px 10px",
+              background: isSel ? "rgba(0,200,255,0.1)" : isHov ? "rgba(0,200,255,0.05)" : "transparent",
+              border: `1px solid ${isSel ? "#40c8ff" : isHov ? "rgba(0,200,255,0.5)" : "#1a3a5a"}`,
+              borderRadius: 3,
+              color: isSel ? "#40c8ff" : isHov ? "#40c8ff" : "#8ab8d8",
+              fontSize: 11,
+              fontFamily: "inherit",
+              cursor: "pointer",
+              transition: "all 0.15s",
+            }}
+          >
+            <span style={{ marginRight: 8, color: isSel ? "#40c8ff" : "#2a6a9a" }}>{opt.id})</span>
+            {opt.text}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── Main component ─────────────────────────────────────────────────────────────
 export function WiresharkChallenge() {
+  const navigate = useNavigate()
   const [selected, setSelected] = useState<Packet | null>(null)
   const [filterVal, setFilterVal] = useState("")
   const [hexOpen, setHexOpen] = useState(false)
@@ -308,7 +373,13 @@ export function WiresharkChallenge() {
   }
 
   return (
-    <div style={s.root}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: '#0a0f1a' }}>
+      <TriviaHUD
+        title="ANÁLISIS DE TRÁFICO"
+        level="EXPLORACIÓN"
+        onBack={() => navigate('/challenges')}
+      />
+    <div style={{ ...s.root, flex: 1 }}>
       {/* ── Toolbar ── */}
       <div style={s.toolbar}>
         <button style={{ ...s.btn, ...(capturing ? s.btnActive : {}) }} onClick={() => setCapturing(c => !c)}>
@@ -439,55 +510,58 @@ export function WiresharkChallenge() {
 
       {/* ── Bottom panels ── */}
       <div style={s.bottomPanel}>
-        {/* Decryptor */}
-        <div style={s.decryptPanel}>
-          <div style={s.panelLabel}>🔓 Descifrador de contrasena (Base64)</div>
-          <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
-            <input
-              style={s.decryptInput}
-              placeholder="Pega el hash/cifrado aqui..."
-              value={encryptedInput}
-              onChange={e => setEncryptedInput(e.target.value)}
-            />
-            <button style={s.decryptBtn} onClick={tryDecrypt}>Descifrar</button>
-          </div>
-          <div style={{
-            ...s.resultBox,
-            background: decryptResult.status === "success" ? "#0a2a0a" : decryptResult.status === "fail" ? "#2a0a0a" : "transparent",
-            border: `1px solid ${decryptResult.status === "success" ? "#1a5a1a" : decryptResult.status === "fail" ? "#5a1a1a" : "#1a2a3a"}`,
-            color: decryptResult.status === "success" ? "#60dd80" : decryptResult.status === "fail" ? "#ff6060" : "#2a4a6a",
-          }}>
-            {decryptResult.text}
-          </div>
-        </div>
 
-        {/* Flag submit */}
-        <div style={s.flagPanel}>
-          <div style={s.panelLabel}>🏁 Enviar flag</div>
-          <input
-            style={s.flagInput}
-            placeholder="ARROWHEAD{...}"
-            value={flagInput}
-            onChange={e => setFlagInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && submitFlag()}
-          />
-          <button style={s.flagBtn} onClick={submitFlag}>VERIFICAR FLAG</button>
-          {flagResult.text && (
-            <div style={{
-              ...s.flagResultText,
-              color: flagResult.status === "success" ? "#60dd80" : "#ff6060",
-            }}>
-              {flagResult.text}
+        {/* Columna izquierda: descifrador + flag */}
+        <div style={{ flex: 1, minWidth: 220, display: "flex", flexDirection: "column", gap: 10 }}>
+          {/* Decryptor */}
+          <div style={s.decryptPanel}>
+            <div style={s.panelLabel}>🔓 Descifrador de contrasena (Base64)</div>
+            <div style={{ display: "flex", gap: 6, marginBottom: 6 }}>
+              <input
+                style={s.decryptInput}
+                placeholder="Pega el hash/cifrado aqui..."
+                value={encryptedInput}
+                onChange={e => setEncryptedInput(e.target.value)}
+              />
+              <button style={s.decryptBtn} onClick={tryDecrypt}>Descifrar</button>
             </div>
-          )}
+            <div style={{
+              ...s.resultBox,
+              background: decryptResult.status === "success" ? "#0a2a0a" : decryptResult.status === "fail" ? "#2a0a0a" : "transparent",
+              border: `1px solid ${decryptResult.status === "success" ? "#1a5a1a" : decryptResult.status === "fail" ? "#5a1a1a" : "#1a2a3a"}`,
+              color: decryptResult.status === "success" ? "#60dd80" : decryptResult.status === "fail" ? "#ff6060" : "#2a4a6a",
+            }}>
+              {decryptResult.text}
+            </div>
+          </div>
+
+          {/* Flag submit */}
+          <div style={s.flagPanel}>
+            <div style={s.panelLabel}>🏁 Enviar flag</div>
+            <input
+              style={s.flagInput}
+              placeholder="ARROWHEAD{...}"
+              value={flagInput}
+              onChange={e => setFlagInput(e.target.value)}
+              onKeyDown={e => e.key === "Enter" && submitFlag()}
+            />
+            <button style={s.flagBtn} onClick={submitFlag}>VERIFICAR FLAG</button>
+            {flagResult.text && (
+              <div style={{
+                ...s.flagResultText,
+                color: flagResult.status === "success" ? "#60dd80" : "#ff6060",
+              }}>
+                {flagResult.text}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Hint */}
-        <div style={s.hintPanel}>
-          <strong style={{ color: "#3a7a9a", display: "block", marginBottom: 4 }}>🔍 Pista</strong>
-          Busca paquetes <span style={{ color: "#ff6060" }}>TELNET</span> con credenciales. Las contrasenas suelen ir codificadas en Base64. Revisa el campo cifrado y usa el descifrador.
-        </div>
+        {/* Columna derecha: panel de pregunta */}
+        <QuestionPanel />
+
       </div>
+    </div>
     </div>
   )
 }
@@ -621,8 +695,7 @@ const s: Record<string, React.CSSProperties> = {
     padding: "10px 14px",
     display: "flex",
     gap: 12,
-    alignItems: "flex-start",
-    flexWrap: "wrap",
+    alignItems: "stretch",
   },
   decryptPanel: { flex: 1, minWidth: 220 },
   panelLabel: {

@@ -32,7 +32,7 @@ const cardLinks = [
     description: 'Retos básicos para familiarizarte con el formato CTF',
     difficulty: 'Fácil' as const, sideText: 'Ideal para principiantes',
     challenges: [
-      { id: 1, name: 'Cuestionario de Iniciación', locked: false },
+      { id: 1, name: 'Cuestionario de Iniciación', locked: false, to: '/challenges/trivia' },
     ],
   },
   {
@@ -40,8 +40,7 @@ const cardLinks = [
     description: 'Retos de dificultad media que te ayudarán a aplicar técnicas',
     difficulty: 'Media' as const, sideText: 'Pon a prueba tus habilidades',
     challenges: [
-      { id: 2, name: 'Geo Guessing',        locked: false },
-      { id: 3, name: 'Análisis de Tráfico', locked: false },
+      { id: 3, name: 'Análisis de Tráfico', locked: false, to: '/challenges/wireshark' },
       { id: 5, name: 'Detección de Fraude', locked: false },
     ],
   },
@@ -52,12 +51,6 @@ const cardLinks = [
     challenges: [
       { id: 4, name: 'Defensa y Ataque Activa', locked: false, to: '/challenges/ataque-defensa' },
     ],
-  },
-  {
-    level: 'Nivel 4', title: 'MAESTRO',
-    description: 'Los retos más complejos del CTF',
-    difficulty: 'Experto' as const, sideText: 'Máximo nivel de exigencia',
-    challenges: [],
   },
 ]
 
@@ -86,7 +79,7 @@ export function ChallengesPage() {
   return (
     <div
       className="font-mono"
-      style={{ minHeight: 'calc(100svh - 56px)', margin: '-32px', position: 'relative', isolation: 'isolate' }}
+      style={{ minHeight: 'calc(100svh - 56px)', position: 'relative', isolation: 'isolate' }}
     >
       {/* GIFs de fondo */}
       <div style={{ position: 'fixed', inset: 0, zIndex: -2 }}>
@@ -207,25 +200,25 @@ export function ChallengesPage() {
         <main className="flex-1 space-y-10">
           <Info />
 
-          <div className="text-center space-y-2">
-            <h2 className="font-bold text-xl tracking-widest uppercase" style={{ color: 'var(--neon)' }}>
+          <div className="flex flex-col items-center space-y-2">
+            <h2 className="font-bold text-xl tracking-widest uppercase text-center" style={{ color: 'var(--neon)' }}>
               Niveles de Retos
             </h2>
-            <p className="text-gray-500 text-sm max-w-xl mx-auto">
+            <p className="text-gray-500 text-sm max-w-xl text-center">
               El CTF está organizado en niveles para que puedas progresar a tu propio ritmo.
             </p>
           </div>
 
           <LevelCard links={cardLinks} />
 
-          <div className="text-center space-y-2 pb-8">
-            <h2 className="font-bold text-xl tracking-widest uppercase" style={{ color: 'var(--neon)' }}>
+          <div className="flex flex-col items-center space-y-2 pb-8">
+            <h2 className="font-bold text-xl tracking-widest uppercase text-center" style={{ color: 'var(--neon)' }}>
               Recuerda
             </h2>
-            <p className="text-gray-500 text-sm max-w-xl mx-auto">
+            <p className="text-gray-500 text-sm max-w-xl text-center">
               Puedes consultar las reglas completas en la sección de Reglas.
             </p>
-            <p className="text-xs font-bold tracking-widest uppercase" style={{ color: 'var(--neon-dim)' }}>
+            <p className="text-xs font-bold tracking-widest uppercase text-center" style={{ color: 'var(--neon-dim)' }}>
               ¡Diviértete, colabora y que gane el mejor!
             </p>
           </div>

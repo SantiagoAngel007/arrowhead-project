@@ -9,13 +9,15 @@ const navLinks = [
 
 export function Layout() {
   return (
-    <div className="app-layout" style={{ padding: 0 }}>
+    <div className="app-layout" style={{ padding: 0, width: '100%', minHeight: '100vh' }}>
       <header style={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: '0 32px',
+        padding: '0 20px',
         height: 52,
+        width: '100%',
+        boxSizing: 'border-box',
         borderBottom: '1px solid var(--neon-border)',
         background: '#030810',
         position: 'sticky',
@@ -69,7 +71,7 @@ export function Layout() {
         </button>
       </header>
 
-      <div style={{ padding: '32px' }}>
+      <div>
         <Outlet />
       </div>
     </div>

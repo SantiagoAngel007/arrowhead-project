@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import logoU from '../../../assets/LogoU.png'
+import { TriviaHUD } from '../../trivia/components/TriviaHUD'
 
 const C       = '#00e5ff'
 const C_DIM   = 'rgba(0,229,255,0.45)'
@@ -74,6 +76,7 @@ function PanelHeader({ label, badge }: { label: string; badge?: React.ReactNode 
 }
 
 export function AtaqueDefensaPage() {
+  const navigate = useNavigate()
   const [secs, setSecs] = useState(45 * 60)
 
   useEffect(() => {
@@ -86,52 +89,20 @@ export function AtaqueDefensaPage() {
   return (
     <div
       className="font-mono"
-      style={{
-        minHeight: 'calc(100svh - 56px)',
-        margin: '-32px',
-        background: '#020608',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      style={{ height: '100vh', background: '#020608', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
     >
-      {/* ── Barra de estado ── */}
-      <div
-        style={{
-          borderBottom: `1px solid ${C_BORDER}`,
-          background: 'rgba(0,0,0,0.95)',
-          padding: '0 20px',
-          height: '44px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <span style={{ color: C, fontWeight: 700, fontSize: '12px', letterSpacing: '0.18em' }}>
-            ⬡ CYBERDEFENDER QUEST
-          </span>
-          <span
-            style={{
-              color: C_DIM, fontSize: '9px',
-              border: `1px solid ${C_BORDER}`,
-              padding: '2px 10px', letterSpacing: '0.15em',
-            }}
-          >
-            INTERMEDIATE
-          </span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-          <span style={{ color: C, fontWeight: 700, fontSize: '15px', fontVariantNumeric: 'tabular-nums' }}>
-            ⏱ {pad(Math.floor(secs / 60))}:{pad(secs % 60)}
-          </span>
-          <span style={{ color: C_DIM, fontSize: '10px', letterSpacing: '0.15em' }}>AGENT_01</span>
-        </div>
-      </div>
+      <TriviaHUD
+        title="DEFENSA Y ATAQUE ACTIVA"
+        level="DESAFÍO"
+        initialSeconds={secs}
+        onBack={() => navigate('/challenges')}
+      />
 
       {/* ── Contenido principal ── */}
-      <div style={{ flex: 1, display: 'flex', gap: '12px', padding: '12px', minHeight: 0 }}>
+      <div style={{ flex: 1, display: 'flex', gap: '12px', padding: '12px', minHeight: 0, overflow: 'hidden' }}>
 
         {/* ── Columna izquierda ── */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0 }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px', minWidth: 0, overflow: 'hidden' }}>
 
           {/* Terminal */}
           <div
@@ -221,7 +192,7 @@ export function AtaqueDefensaPage() {
         </div>
 
         {/* ── Columna derecha ── */}
-        <div style={{ width: '272px', display: 'flex', flexDirection: 'column', gap: '12px', flexShrink: 0 }}>
+        <div style={{ width: '340px', flexShrink: 0, display: 'flex', flexDirection: 'column', gap: '12px', overflow: 'hidden' }}>
 
           {/* Imagen hacker + logo */}
           <div
@@ -235,14 +206,18 @@ export function AtaqueDefensaPage() {
             }}
           >
             <Corners />
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '70px', lineHeight: 1, filter: `drop-shadow(0 0 18px ${C})`, opacity: 0.9 }}>
-                🕵
-              </div>
-              <div style={{ color: C_DIM, fontSize: '9px', letterSpacing: '0.2em', marginTop: '8px' }}>
-                SECURITY ANALYST
-              </div>
-            </div>
+            <img
+              src="https://github.com/SantiagoAngel007/arrowhead-project/releases/download/assets-v1/hacker2.gif"
+              alt="Hacker"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+                filter: `drop-shadow(0 0 12px ${C})`,
+                opacity: 0.9,
+              }}
+            />
             <img
               src={logoU}
               alt="Icesi"
