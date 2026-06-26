@@ -1,4 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
+import { NotFoundPage } from './pages/NotFoundPage'
 import { Layout } from './components/Layout'
 import { LoginPage } from './features/auth/pages/LoginPage'
 import { ChallengesPage } from './features/challenges/pages/ChallengesPage'
@@ -9,6 +10,7 @@ import { TriviaPage } from './features/trivia/pages/TriviaPage'
 import { RankingPage } from './features/ranking/pages/RankingPage'
 import { InfoPage } from './features/info/pages/InfoPage'
 import { AdminPage } from './features/admin/pages/AdminPage'
+import { AdminLoginPage } from './features/auth/pages/AdminLoginPage'
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +34,14 @@ export const router = createBrowserRouter([
     element: <AtaqueDefensaPage />,
   },
   {
+    path: '/admin/login',
+    element: <AdminLoginPage />,
+  },
+  {
+    path: '/admin',
+    element: <AdminPage />,
+  },
+  {
     path: '/',
     element: <Layout />,
     children: [
@@ -39,7 +49,10 @@ export const router = createBrowserRouter([
       { path: 'challenges/:id', element: <ChallengeDetailPage /> },
       { path: 'ranking',    element: <RankingPage /> },
       { path: 'info',       element: <InfoPage /> },
-      { path: 'admin',      element: <AdminPage /> },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ])
