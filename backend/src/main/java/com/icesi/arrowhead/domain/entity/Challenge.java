@@ -38,6 +38,10 @@ public class Challenge {
     @Column(nullable = false)
     private Integer displayOrder;
 
+    // Flag esperada para completar el reto vía envío directo (ej. contraseña
+    // encontrada en una captura). NULL si el reto solo se completa por preguntas.
+    private String flag;
+
     @OneToMany(mappedBy = "challenge", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Question> questions;
 

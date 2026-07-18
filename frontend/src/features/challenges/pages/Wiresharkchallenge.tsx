@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import { TriviaHUD } from "../../trivia/components/TriviaHUD"
+import { getChallengeDetail, getScore, submitAnswer as submitAnswerApi, submitFlag as submitFlagApi } from "../services/challenges.service"
+import type { AnswerResultDTO, QuestionDTO, ScoreDTO } from "../types"
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface HexData {
@@ -221,7 +223,8 @@ const PACKETS: Packet[] = [
 ]
 
 const SECRET_HASH = "QVJST1dIRUFEe3BhY2tldF9zbmlmZmVyfQ=="
-const CORRECT_FLAG = "ARROWHEAD{packet_sniffer}"
+// El reto "Análisis de Tráfico" seedeado en la migración V2 (backend/db/migration).
+const WIRESHARK_CHALLENGE_ID = 2
 
 // ── Proto color map ────────────────────────────────────────────────────────────
 const PROTO_COLORS: Record<string, string> = {
@@ -241,17 +244,66 @@ const ROW_BG: Record<string, string> = {
 
 // ── Question Panel ────────────────────────────────────────────────────────────
 
-const WS_OPTIONS = [
-  { id: "A", text: "HTTP" },
-  { id: "B", text: "TELNET" },
-  { id: "C", text: "SSH" },
-  { id: "D", text: "FTP" },
-]
+interface QuestionPanelProps {
+  questions: QuestionDTO[]
+  results: Record<number, AnswerResultDTO>
+  onAnswer: (questionId: number, optionId: number) => void
+  loadError: string | null
+}
 
-function QuestionPanel() {
-  const [selected, setSelected] = useState<string | null>(null)
-  const [hovered, setHovered] = useState<string | null>(null)
+function QuestionCard({ question, result, onAnswer }: {
+  question: QuestionDTO
+  result: AnswerResultDTO | undefined
+  onAnswer: (optionId: number) => void
+}) {
+  const [hovered, setHovered] = useState<number | null>(null)
+  const solved = result?.correct === true
 
+  return (
+    <div style={{ paddingBottom: 10, borderBottom: "1px solid #142033", marginBottom: 10 }}>
+      <div style={{ fontSize: 11, color: "#c8d8e8", lineHeight: 1.6, marginBottom: 6 }}>
+        {solved ? "✓ " : ""}{question.text}
+      </div>
+      {question.options.map(opt => {
+        const isHov = hovered === opt.id
+        return (
+          <button
+            key={opt.id}
+            disabled={solved}
+            onClick={() => onAnswer(opt.id)}
+            onMouseEnter={() => setHovered(opt.id)}
+            onMouseLeave={() => setHovered(null)}
+            style={{
+              display: "block",
+              width: "100%",
+              textAlign: "left",
+              padding: "6px 10px",
+              marginBottom: 4,
+              background: solved ? "rgba(96,221,128,0.05)" : isHov ? "rgba(0,200,255,0.05)" : "transparent",
+              border: `1px solid ${solved ? "#1a5a1a" : isHov ? "rgba(0,200,255,0.5)" : "#1a3a5a"}`,
+              borderRadius: 3,
+              color: solved ? "#5a9a6a" : isHov ? "#40c8ff" : "#8ab8d8",
+              fontSize: 11,
+              fontFamily: "inherit",
+              cursor: solved ? "default" : "pointer",
+              transition: "all 0.15s",
+            }}
+          >
+            <span style={{ marginRight: 8, color: solved ? "#3a7a4a" : "#2a6a9a" }}>{opt.label})</span>
+            {opt.text}
+          </button>
+        )
+      })}
+      {result && (
+        <div style={{ fontSize: 10, marginTop: 2, color: result.correct ? "#60dd80" : "#ff6060" }}>
+          {result.correct ? "✓" : "✗"} {result.message}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function QuestionPanel({ questions, results, onAnswer, loadError }: QuestionPanelProps) {
   return (
     <div style={{
       flex: 1, minWidth: 200,
@@ -261,42 +313,26 @@ function QuestionPanel() {
       padding: "12px 14px",
       display: "flex",
       flexDirection: "column",
-      gap: 8,
+      gap: 4,
       fontFamily: '"Courier New", Consolas, monospace',
+      maxHeight: 320,
+      overflowY: "auto",
     }}>
       <div style={{ fontSize: 9, color: "#4a7a9a", letterSpacing: "0.18em", textTransform: "uppercase", marginBottom: 2 }}>
-        CHALLENGE 3 — PREGUNTA
+        PREGUNTAS DE COMPRENSIÓN
       </div>
-      <div style={{ fontSize: 11, color: "#c8d8e8", lineHeight: 1.6, marginBottom: 4 }}>
-        ¿Qué protocolo transmitió las credenciales en texto plano?
-      </div>
-      {WS_OPTIONS.map(opt => {
-        const isSel = selected === opt.id
-        const isHov = hovered === opt.id && !isSel
-        return (
-          <button
-            key={opt.id}
-            onClick={() => setSelected(opt.id)}
-            onMouseEnter={() => setHovered(opt.id)}
-            onMouseLeave={() => setHovered(null)}
-            style={{
-              textAlign: "left",
-              padding: "6px 10px",
-              background: isSel ? "rgba(0,200,255,0.1)" : isHov ? "rgba(0,200,255,0.05)" : "transparent",
-              border: `1px solid ${isSel ? "#40c8ff" : isHov ? "rgba(0,200,255,0.5)" : "#1a3a5a"}`,
-              borderRadius: 3,
-              color: isSel ? "#40c8ff" : isHov ? "#40c8ff" : "#8ab8d8",
-              fontSize: 11,
-              fontFamily: "inherit",
-              cursor: "pointer",
-              transition: "all 0.15s",
-            }}
-          >
-            <span style={{ marginRight: 8, color: isSel ? "#40c8ff" : "#2a6a9a" }}>{opt.id})</span>
-            {opt.text}
-          </button>
-        )
-      })}
+      {loadError && <div style={{ fontSize: 11, color: "#ff6060" }}>{loadError}</div>}
+      {!loadError && questions.length === 0 && (
+        <div style={{ fontSize: 11, color: "#2a5a7a" }}>Cargando preguntas...</div>
+      )}
+      {questions.map(q => (
+        <QuestionCard
+          key={q.id}
+          question={q}
+          result={results[q.id]}
+          onAnswer={optionId => onAnswer(q.id, optionId)}
+        />
+      ))}
     </div>
   )
 }
@@ -315,7 +351,42 @@ export function WiresharkChallenge() {
   const [flagResult, setFlagResult] = useState<{ text: string; status: "idle" | "success" | "fail" }>({ text: "", status: "idle" })
   const [expandedFrames, setExpandedFrames] = useState<Record<string, boolean>>({})
 
+  const [questions, setQuestions] = useState<QuestionDTO[]>([])
+  const [answerResults, setAnswerResults] = useState<Record<number, AnswerResultDTO>>({})
+  const [score, setScore] = useState<ScoreDTO | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const [challenge, currentScore] = await Promise.all([
+          getChallengeDetail(WIRESHARK_CHALLENGE_ID),
+          getScore(WIRESHARK_CHALLENGE_ID),
+        ])
+        if (cancelled) return
+        setQuestions(challenge.questions)
+        setScore(currentScore)
+      } catch {
+        if (!cancelled) setLoadError("No se pudieron cargar las preguntas. Inicia sesión e intenta de nuevo.")
+      }
+    })()
+    return () => { cancelled = true }
+  }, [])
+
+  const handleAnswer = useCallback(async (questionId: number, optionId: number) => {
+    try {
+      const result = await submitAnswerApi(WIRESHARK_CHALLENGE_ID, questionId, optionId)
+      setAnswerResults(prev => ({ ...prev, [questionId]: result }))
+      if (result.correct && result.pointsEarned > 0) {
+        setScore(prev => prev ? { ...prev, points: prev.points + result.pointsEarned } : prev)
+      }
+    } catch {
+      setAnswerResults(prev => ({ ...prev, [questionId]: { correct: false, pointsEarned: 0, message: "Error al enviar la respuesta" } }))
+    }
+  }, [])
 
   useEffect(() => {
     if (capturing) {
@@ -362,13 +433,17 @@ export function WiresharkChallenge() {
     }
   }
 
-  const submitFlag = () => {
+  const submitFlag = async () => {
     const val = flagInput.trim()
     if (!val) { setFlagResult({ text: "Ingresa la flag", status: "idle" }); return }
-    if (val === CORRECT_FLAG) {
-      setFlagResult({ text: "✓ FLAG CORRECTA — +250 pts", status: "success" })
-    } else {
-      setFlagResult({ text: "✗ Flag incorrecta — sigue buscando", status: "fail" })
+    try {
+      const result = await submitFlagApi(WIRESHARK_CHALLENGE_ID, val)
+      setFlagResult({ text: `${result.correct ? "✓" : "✗"} ${result.message}`, status: result.correct ? "success" : "fail" })
+      if (result.correct && result.pointsEarned > 0) {
+        setScore(prev => prev ? { ...prev, points: prev.points + result.pointsEarned, completed: true } : prev)
+      }
+    } catch {
+      setFlagResult({ text: "✗ Error al verificar la flag, intenta de nuevo", status: "fail" })
     }
   }
 
@@ -405,6 +480,7 @@ export function WiresharkChallenge() {
         <span>Mostrados: <span style={s.statVal}>{filteredPackets.length}</span></span>
         <span>Interfaz: <span style={s.statVal}>eth0</span></span>
         <span>Duracion: <span style={s.statVal}>{fmtTime(elapsed)}</span></span>
+        <span>Puntaje: <span style={s.statVal}>{score ? `${score.points} / ${score.maxPoints}` : "—"}</span></span>
         <span style={{ color: capturing ? "#60dd80" : "#ff6060" }}>
           {capturing ? "● CAPTURANDO" : "■ DETENIDO"}
         </span>
@@ -557,8 +633,8 @@ export function WiresharkChallenge() {
           </div>
         </div>
 
-        {/* Columna derecha: panel de pregunta */}
-        <QuestionPanel />
+        {/* Columna derecha: panel de preguntas */}
+        <QuestionPanel questions={questions} results={answerResults} onAnswer={handleAnswer} loadError={loadError} />
 
       </div>
     </div>

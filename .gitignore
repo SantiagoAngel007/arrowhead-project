@@ -1,0 +1,15 @@
+# Claude Code
+.claude/
+
+# IDE
+/.vscode/
+/.metals/
+/.bloop/
+/.ammonite/
+metals.sbt
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db

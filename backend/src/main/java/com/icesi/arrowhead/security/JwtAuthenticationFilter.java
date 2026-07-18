@@ -27,19 +27,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        // TODO:
-        // 1. Extraer el token del header "Authorization: Bearer <token>"
-        // 2. Validar el token con jwtTokenProvider.validateToken()
-        // 3. Obtener el email con jwtTokenProvider.getUserEmailFromToken()
-        // 4. Cargar UserDetails con userDetailsService.loadUserByUsername()
-        // 5. Crear UsernamePasswordAuthenticationToken y setearlo en el SecurityContext
-        // 6. Llamar filterChain.doFilter() siempre al final
+        String token = extractTokenFromRequest(request);
+
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            String alias = jwtTokenProvider.getUsernameFromToken(token);
+            UserDetails userDetails = userDetailsService.loadUserByUsername(alias);
+
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
 
         filterChain.doFilter(request, response);
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {
-        // TODO: leer el header Authorization y quitar el prefijo "Bearer "
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

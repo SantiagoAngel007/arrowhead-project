@@ -1,6 +1,5 @@
 package com.icesi.arrowhead.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -12,11 +11,7 @@ public class RegisterRequest {
     @Size(min = 3, max = 50)
     private String alias;
 
+    // Código de acceso del evento, no una contraseña personal.
     @NotBlank
-    @Email
-    private String email;
-
-    @NotBlank
-    @Size(min = 6)
-    private String password;
+    private String code;
 }

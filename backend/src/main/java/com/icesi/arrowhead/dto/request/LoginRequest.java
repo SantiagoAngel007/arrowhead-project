@@ -1,6 +1,5 @@
 package com.icesi.arrowhead.dto.request;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -8,9 +7,9 @@ import lombok.Data;
 public class LoginRequest {
 
     @NotBlank
-    @Email
-    private String email;
+    private String alias;
 
+    // Código de acceso del evento, no una contraseña personal.
     @NotBlank
-    private String password;
+    private String code;
 }
